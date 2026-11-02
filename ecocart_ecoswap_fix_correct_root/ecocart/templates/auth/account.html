@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Account{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="section-head"><div><h1>Hi, {{ user.full_name }}</h1><p class="muted">{{ user.email }}{% if user.is_demo %} · demo account{% endif %} · member since {{ user.created_at | dt }}</p></div>
+    <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn btn-outline" type="submit">Sign out</button></form></div>
+  <div class="grid grid-2">
+    <div class="card"><div class="card-body">
+      <h3>Profile & default address</h3>
+      <form method="post" action="{{ url_for('auth.account') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="profile">
+        <div class="field"><label>Full name</label><input type="text" name="full_name" value="{{ user.full_name }}" required></div>
+        <div class="field"><label>Phone</label><input type="tel" name="phone" value="{{ user.phone or '' }}"></div>
+        <div class="field"><label>Address line</label><input type="text" name="address_line" value="{{ user.address_line or '' }}"></div>
+        <div class="form-row">
+          <div class="field"><label>City</label><input type="text" name="city" value="{{ user.city or '' }}"></div>
+          <div class="field"><label>State</label><input type="text" name="state" value="{{ user.state or '' }}"></div>
+        </div>
+        <div class="field"><label>PIN code</label><input type="text" name="pincode" value="{{ user.pincode or '' }}" maxlength="10"></div>
+        <button class="btn btn-primary" type="submit">Save profile</button>
+      </form>
+    </div></div>
+    <div>
+      <div class="card"><div class="card-body">
+        <h3>Change password</h3>
+        <form method="post" action="{{ url_for('auth.account') }}">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="action" value="password">
+          <div class="field"><label>Current password</label><input type="password" name="current" required autocomplete="current-password"></div>
+          <div class="field"><label>New password</label><input type="password" name="new" required minlength="8" autocomplete="new-password"></div>
+          <button class="btn btn-outline" type="submit">Update password</button>
+        </form>
+      </div></div>
+      <div class="card" style="margin-top:1.25rem"><div class="card-body">
+        <h3>Recent orders</h3>
+        {% for o in recent %}<div class="summary-line small"><a href="{{ url_for('orders.detail', order_id=o.order_id) }}">{{ o.order_ref }}</a><span>{{ o.total_amount | inr }} · <span class="status st-{{ o.order_status }}">{{ o.order_status }}</span></span></div>{% else %}<p class="muted small">No orders yet.</p>{% endfor %}
+        <a class="small" href="{{ url_for('orders.history') }}">All orders →</a>
+      </div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

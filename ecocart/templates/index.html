@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Shop sustainably{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">Sustainable e-commerce</div>
+      <h1>Every product scored. Every purchase, a greener option.</h1>
+      <p>EcoCart puts a transparent Eco-Score on the catalogue and suggests an <strong>Eco Swap</strong> — a comparable product in the same category with a better score and a similar price.</p>
+      <div class="cta">
+        <a class="btn btn-light btn-lg" href="{{ url_for('shop.shop') }}">Shop the catalogue</a>
+        <a class="btn btn-outline btn-lg" style="border-color:#8fd3ad;color:#fff;background:transparent" href="{{ url_for('main.eco_swap_page') }}">See Eco Swaps</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="v">{{ stats.products }}</div><div class="l">Products in {{ stats.categories }} categories</div></div>
+      <div class="hero-stat"><div class="v">{{ stats.scored }}</div><div class="l">Products with an Eco-Score</div></div>
+      <div class="hero-stat"><div class="v">{{ stats.avg_eco or '–' }}</div><div class="l">Average Eco-Score (0-100)</div></div>
+      <div class="hero-stat"><div class="v">{{ stats.good_or_better }}</div><div class="l">Rated B or better</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><div class="eyebrow">Browse</div><h2>Shop by category</h2></div><a href="{{ url_for('main.categories') }}">All categories →</a></div>
+    <div class="cat-grid">
+      {% for c in categories %}
+      <a class="cat-card" href="{{ url_for('shop.shop', category=c.slug) }}">
+        <span class="cat-icon">{% with icon=c.icon %}{% include 'icons/cat.html' %}{% endwith %}</span>
+        <span><span class="t">{{ c.category_name }}</span><br><span class="s">{{ c.product_count }} products{% if c.avg_eco_score %} · avg Eco-Score {{ c.avg_eco_score | int }}{% endif %}</span></span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:#fff;border-block:1px solid var(--line)">
+  <div class="container">
+    <div class="section-head"><div><div class="eyebrow">Eco Swap</div><h2>Same need, smaller footprint</h2><p class="muted">Rule-based picks from the live catalogue: same category, higher Eco-Score, price within ±20%.</p></div><a href="{{ url_for('main.eco_swap_page') }}">How Eco Swap works →</a></div>
+    {% if swaps %}
+    <div class="grid grid-3">
+      {% for s in swaps %}
+      <div class="card swap-card"><div class="card-body">
+        <div class="swap-pair">
+          <div class="swap-item"><img src="{{ s.orig_image }}" alt=""><div><div class="n"><a href="{{ url_for('shop.product', product_id=s.orig_id) }}">{{ s.orig_name }}</a></div><div class="p">{{ s.orig_price | inr }} · Eco {{ s.orig_score }}</div></div></div>
+          <div class="swap-arrow">→</div>
+          <div class="swap-item"><img src="{{ s.alt_image }}" alt=""><div><div class="n"><a href="{{ url_for('shop.product', product_id=s.alt_id) }}">{{ s.alt_name }}</a></div><div class="p">{{ s.alt_price | inr }} · Eco {{ s.alt_score }}</div></div></div>
+        </div>
+        <div style="margin-top:.75rem"><span class="gain">+{{ s.score_gain | int }} Eco points</span> <span class="small muted">{{ s.category_name }} · {% if s.price_diff > 0 %}+{{ s.price_diff | inr }}{% elif s.price_diff < 0 %}−{{ (-s.price_diff) | inr }}{% else %}same price{% endif %}</span></div>
+      </div></div>
+      {% endfor %}
+    </div>
+    {% else %}<div class="empty">No swap pairs yet — seed the catalogue to see recommendations.</div>{% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><div class="eyebrow">Featured</div><h2>Featured products</h2></div><a href="{{ url_for('shop.shop') }}">View all →</a></div>
+    <div class="product-grid">{% for p in featured %}{% include '_product_card.html' %}{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><div class="eyebrow">Top rated for the planet</div><h2>Highest Eco-Scores in stock</h2></div><a href="{{ url_for('shop.shop', sort='eco_desc') }}">Sort shop by Eco-Score →</a></div>
+    <div class="product-grid">{% for p in sustainable %}{% include '_product_card.html' %}{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="card" style="background:var(--green-900);color:#fff;border:0"><div class="card-body" style="padding:2rem;display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;align-items:center">
+      <div><h2 style="color:#fff">See the numbers behind the badge</h2><p style="color:#cfe6d8;margin:0">{{ stats.orders }} orders analysed. Score distributions, category averages and sales trends, all computed live in Oracle.</p></div>
+      <a class="btn btn-light btn-lg" href="{{ url_for('dashboard.dashboard') }}">Open the sustainability dashboard</a>
+    </div></div>
+  </div>
+</section>
+{% endblock %}

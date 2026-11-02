@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="eyebrow">Browse</div>
+  <h1>Categories</h1>
+  <p class="muted">Average Eco-Scores are computed live from the products currently in each category.</p>
+  <div class="grid grid-2">
+    {% for c in categories %}
+    <a class="card cat-card" href="{{ url_for('shop.shop', category=c.slug) }}" style="padding:1.25rem">
+      <span class="cat-icon" style="width:56px;height:56px">{% with icon=c.icon %}{% include 'icons/cat.html' %}{% endwith %}</span>
+      <span style="flex:1">
+        <span class="t" style="font-size:1.1rem">{{ c.category_name }}</span><br>
+        <span class="s">{{ c.description }}</span><br>
+        <span class="small" style="margin-top:.4rem;display:inline-block">{{ c.product_count }} products{% if c.min_price %} · from {{ c.min_price | inr }}{% endif %}{% if c.avg_eco_score %} · avg Eco-Score <strong>{{ c.avg_eco_score | int }}</strong>{% endif %}</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

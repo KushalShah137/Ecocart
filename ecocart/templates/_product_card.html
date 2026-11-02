@@ -1,0 +1,28 @@
+{# expects: p (row from v_product_catalog) #}
+<article class="pcard">
+  {% set g_ = p.eco_grade or (p.eco_score | grade) %}
+  <span class="eco eco-{{ 'NA' if g_ == 'N/A' else g_ }}" title="Eco-Score {{ p.eco_score if p.eco_score is not none else 'not assessed' }} — {{ p.eco_score | gradelabel }}">
+    <span class="dot">{{ g_ }}</span>{% if p.eco_score is not none %}{{ p.eco_score }}/100{% else %}No score{% endif %}
+  </span>
+  <div class="thumb"><img src="{{ p.image_url or url_for('static', filename='img/placeholder.svg') }}" alt="{{ p.product_name }}" loading="lazy" onerror="this.src='{{ url_for('static', filename='img/placeholder.svg') }}'"></div>
+  <div class="body">
+    <div class="cat">{{ p.category_name }}</div>
+    <div class="name"><a href="{{ url_for('shop.product', product_id=p.product_id) }}">{{ p.product_name }}</a></div>
+    <div class="brand">{{ p.brand or '' }}</div>
+    <div class="meta">
+      <span class="price">{{ p.price | inr }}</span>
+      {% if p.review_count %}<span class="rating">{{ p.avg_rating | stars }} <span class="n">({{ p.review_count }})</span></span>{% else %}<span class="rating n muted small">No reviews</span>{% endif %}
+    </div>
+    {% if p.stock_quantity == 0 %}<span class="stock-out">Out of stock</span>
+    {% elif p.stock_quantity < 10 %}<span class="stock-low">Only {{ p.stock_quantity }} left</span>{% endif %}
+    {% if p.stock_quantity > 0 %}
+    <form method="post" action="{{ url_for('cart.add') }}" data-add-to-cart>
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="product_id" value="{{ p.product_id }}">
+      <input type="hidden" name="quantity" value="1">
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <button type="submit" class="btn btn-outline btn-sm btn-block">Add to cart</button>
+    </form>
+    {% endif %}
+  </div>
+</article>

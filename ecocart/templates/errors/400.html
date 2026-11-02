@@ -1,0 +1,2 @@
+{% extends 'base.html' %}{% block title %}Bad request{% endblock %}
+{% block content %}<div class="container section"><div class="empty card"><div class="icon">⚠️</div><h1 style="font-size:1.5rem">That request couldn’t be processed</h1><p>{{ message or 'The form was invalid or expired.' }}</p><a class="btn btn-primary" href="javascript:history.back()">Go back</a></div></div>{% endblock %}

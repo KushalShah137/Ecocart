@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Order {{ order.order_ref }}{% endblock %}
+{% block content %}
+<div class="container section">
+  {% if confirmation %}
+  <div class="card" style="background:var(--green-900);color:#fff;border:0;margin-bottom:1.5rem"><div class="card-body" style="padding:2rem">
+    <div class="eyebrow" style="color:#8fd3ad">Order confirmed</div>
+    <h1 style="color:#fff">Thank you, {{ order.customer_name.split(' ')[0] }}!</h1>
+    <p style="color:#cfe6d8;margin:0">Order <strong>{{ order.order_ref }}</strong> was recorded in a single Oracle transaction: order, items, stock reduction and payment together. {% if order.payment_method == 'COD' %}Pay in cash on delivery.{% else %}Your demo payment is marked as paid.{% endif %}</p>
+  </div></div>
+  {% endif %}
+  <div class="breadcrumb"><a href="{{ url_for('orders.history') }}">My orders</a> › {{ order.order_ref }}</div>
+  <div class="section-head"><div><h1 style="font-size:1.6rem">Order {{ order.order_ref }}</h1><p class="muted">Placed {{ order.order_date | dt('%d %b %Y at %H:%M') }}</p></div>
+    <div><span class="status st-{{ order.order_status }}">{{ order.order_status }}</span> <span class="status st-{{ order.payment_status }}">Payment {{ order.payment_status }}</span></div></div>
+
+  <div class="cart-layout">
+    <div class="card"><table class="table">
+      <thead><tr><th>Product</th><th class="num">Purchase price</th><th class="num">Qty</th><th class="num">Line total</th></tr></thead>
+      <tbody>
+        {% for i in order['items'] %}
+        <tr>
+          <td><div class="swap-item"><img src="{{ i.image_url }}" alt=""><div><div class="n"><a href="{{ url_for('shop.product', product_id=i.product_id) }}">{{ i.product_name }}</a></div><div class="p">{{ i.brand or '' }}{% if i.eco_score is not none %} · Eco {{ i.eco_score }}{% endif %}</div></div></div></td>
+          <td class="num">{{ i.unit_price | inr }}{% if i.unit_price != i.current_price %}<br><span class="tiny muted">now {{ i.current_price | inr }}</span>{% endif %}</td>
+          <td class="num">{{ i.quantity }}</td>
+          <td class="num price">{{ i.line_total | inr }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    <aside>
+      <div class="card"><div class="card-body">
+        <h3>Summary</h3>
+        <div class="summary-line"><span>Subtotal</span><span>{{ order.subtotal | inr }}</span></div>
+        <div class="summary-line"><span>Delivery</span><span>{{ 'Free' if order.shipping_fee == 0 else order.shipping_fee | inr }}</span></div>
+        <div class="summary-line summary-total"><span>Total</span><span>{{ order.total_amount | inr }}</span></div>
+        <dl class="kv" style="margin-top:1rem;grid-template-columns:110px 1fr">
+          <dt>Payment</dt><dd>{{ order.payment_method }}{% if order.transaction_ref %}<br><span class="tiny muted">{{ order.transaction_ref }}</span>{% endif %}</dd>
+          <dt>Paid at</dt><dd>{{ order.paid_at | dt('%d %b %Y, %H:%M') if order.paid_at else '—' }}</dd>
+          <dt>Ship to</dt><dd>{{ order.shipping_address or '—' }}</dd>
+        </dl>
+      </div></div>
+      {% if order.cancellable %}
+      <form method="post" action="{{ url_for('orders.cancel', order_id=order.order_id) }}" style="margin-top:1rem" onsubmit="return confirm('Cancel this order? Stock will be restored and any demo payment refunded.')">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn btn-danger btn-block" type="submit">Cancel order</button>
+      </form>
+      {% else %}<p class="tiny muted" style="margin-top:1rem">Orders can be cancelled while they are PLACED or CONFIRMED.</p>{% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="auth-box card"><div class="card-body" style="padding:1.75rem">
+    <h1 style="font-size:1.6rem">Sign in</h1>
+    <p class="muted">Welcome back to EcoCart.</p>
+    <form method="post" action="{{ url_for('auth.login') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" name="email" value="{{ email or '' }}" required autocomplete="email" autofocus></div>
+      <div class="field"><label for="pw">Password</label><input id="pw" type="password" name="password" required autocomplete="current-password"></div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit">Sign in</button>
+    </form>
+    <p class="small" style="margin-top:1rem">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+    <div class="demo-box"><strong>Demo account</strong><br>demo@example.com / <code>Demo@1234</code><br><span class="tiny">A fictional customer from the seeded demo dataset.</span></div>
+  </div></div>
+</div>
+{% endblock %}

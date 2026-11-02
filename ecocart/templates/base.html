@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}EcoCart{% endblock %} · EcoCart</title>
+  <meta name="description" content="EcoCart — sustainable e-commerce with Eco-Scores and Eco Swap recommendations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/placeholder.svg') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="topbar">Every Eco-Score on this site is a transparent, rule-based estimate — see <a href="{{ url_for('main.sustainability') }}" style="color:#fff">how we score</a>.</div>
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="{{ url_for('main.home') }}"><span class="logo">{% include 'icons/leaf.svg' %}</span>EcoCart</a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+    <div class="nav-links">
+      <a href="{{ url_for('main.home') }}" class="{{ 'active' if current_path == '/' }}">Home</a>
+      <a href="{{ url_for('shop.shop') }}" class="{{ 'active' if current_path.startswith('/shop') or current_path.startswith('/product') }}">Shop</a>
+      <a href="{{ url_for('main.categories') }}" class="{{ 'active' if current_path.startswith('/categories') }}">Categories</a>
+      <a href="{{ url_for('main.eco_swap_page') }}" class="{{ 'active' if current_path.startswith('/eco-swap') }}">Eco Swap</a>
+      <a href="{{ url_for('dashboard.dashboard') }}" class="{{ 'active' if current_path.startswith('/dashboard') or current_path.startswith('/sustainability') }}">Sustainability</a>
+    </div>
+    <div class="nav-search">
+      <form action="{{ url_for('shop.shop') }}" method="get" role="search">
+        <input type="search" name="q" placeholder="Search products…" value="{{ request.args.get('q', '') }}" aria-label="Search products">
+        <button type="submit" aria-label="Search">{% include 'icons/search.svg' %}</button>
+      </form>
+    </div>
+    <div class="nav-actions">
+      {% if g.user_id %}
+        <a href="{{ url_for('orders.history') }}" class="{{ 'active' if current_path.startswith('/orders') }}"><span class="label">My Orders</span></a>
+        <a href="{{ url_for('cart.view') }}" class="{{ 'active' if current_path.startswith('/cart') or current_path.startswith('/checkout') }}">Cart <span class="pill-count" data-cart-count {% if not cart_count %}hidden{% endif %}>{{ cart_count }}</span></a>
+        <a href="{{ url_for('auth.account') }}" class="{{ 'active' if current_path.startswith('/account') }}"><span class="label">{{ g.user_name.split(' ')[0] }}</span></a>
+      {% else %}
+        <a href="{{ url_for('cart.view') }}">Cart</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm">Sign in</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-wrap">
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}"><span>{{ message }}</span><button aria-label="Dismiss">×</button></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>
+  <div class="container cols">
+    <div>
+      <div class="brand" style="color:#fff"><span class="logo">{% include 'icons/leaf.svg' %}</span>EcoCart</div>
+      <p style="max-width:420px;margin-top:.75rem">Sustainable e-commerce platform with Eco Swap recommendations. A DBMS project built on Oracle Database 26ai Free, Flask and python-oracledb.</p>
+      <p class="tiny">Catalogue, customers and orders are a clearly labelled synthetic demo dataset. Demo payments move no real money.</p>
+    </div>
+    <div>
+      <strong style="color:#fff">Explore</strong><br>
+      <a href="{{ url_for('shop.shop') }}">Shop</a><br>
+      <a href="{{ url_for('main.categories') }}">Categories</a><br>
+      <a href="{{ url_for('main.eco_swap_page') }}">Eco Swap</a><br>
+      <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+    </div>
+    <div>
+      <strong style="color:#fff">Transparency</strong><br>
+      <a href="{{ url_for('main.sustainability') }}">Scoring methodology</a><br>
+      <a href="{{ url_for('main.sustainability') }}#missing">Products not yet scored</a><br>
+      <a href="/health">System health</a>
+    </div>
+  </div>
+</footer>
+{% block scripts %}{% endblock %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

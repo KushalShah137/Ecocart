@@ -1,0 +1,11 @@
+{# usage: {% with icon=category.icon %}{% include 'icons/cat.html' %}{% endwith %} #}
+<svg width="24" height="24" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+{% if icon == 'bolt' %}<path d="M52 10 L28 56 H48 L40 90 L72 40 H52 Z"/>
+{% elif icon == 'shirt' %}<path d="M30 14 L48 8 Q50 18 52 8 L70 14 L88 30 L74 42 L74 92 H26 V42 L12 30 Z"/>
+{% elif icon == 'home' %}<path d="M50 10 L92 46 H80 V90 H58 V64 H42 V90 H20 V46 H8 Z"/>
+{% elif icon == 'bag' %}<path d="M24 36 H76 L82 92 H18 Z M36 36 V28 A14 14 0 0 1 64 28 V36"/>
+{% elif icon == 'pen' %}<path d="M18 82 L66 34 L80 48 L32 96 L14 100 Z M62 24 L76 10 L90 24 L76 38 Z"/>
+{% elif icon == 'cup' %}<path d="M24 22 H70 L66 90 H28 Z M70 36 H82 A10 12 0 0 1 70 60"/>
+{% elif icon == 'sprout' %}<path d="M50 92 V50 M50 60 C50 36 32 30 16 32 C18 50 30 62 50 60 Z M50 50 C50 30 66 22 84 24 C82 42 70 54 50 50 Z"/>
+{% else %}<path d="M84 16 C40 16 18 44 18 84 C58 84 86 62 84 16 Z M22 82 L70 30"/>{% endif %}
+</svg>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Your cart{% endblock %}
+{% block content %}
+<div class="container section" data-cart-page>
+  <h1>Your cart</h1>
+  {% if cart['items'] %}
+  {% if cart.problems %}<div class="note note-warn" style="margin-bottom:1rem">Some items exceed available stock or are no longer available — adjust them before checkout.</div>{% endif %}
+  <div class="cart-layout">
+    <div class="card"><table class="table">
+      <thead><tr><th>Product</th><th class="num">Price</th><th>Quantity</th><th class="num">Total</th><th></th></tr></thead>
+      <tbody>
+        {% for i in cart['items'] %}
+        <tr data-row="{{ i.product_id }}">
+          <td><div class="swap-item"><img src="{{ i.image_url }}" alt=""><div><div class="n"><a href="{{ url_for('shop.product', product_id=i.product_id) }}">{{ i.product_name }}</a></div><div class="p">{{ i.brand or '' }}{% if i.eco_score is not none %} · Eco {{ i.eco_score }}{% endif %}{% if i.stock_quantity < i.quantity %} · <span class="stock-out">only {{ i.stock_quantity }} in stock</span>{% endif %}</div></div></div></td>
+          <td class="num">{{ i.price | inr }}</td>
+          <td>
+            <form method="post" action="{{ url_for('cart.update') }}" class="qty">
+              <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="product_id" value="{{ i.product_id }}">
+              <button type="button" data-qty="-1" aria-label="Decrease">−</button><input type="number" name="quantity" value="{{ i.quantity }}" min="1" max="50"><button type="button" data-qty="1" aria-label="Increase">+</button>
+              <noscript><button class="btn btn-sm" type="submit">Update</button></noscript>
+            </form>
+          </td>
+          <td class="num price" data-line>{{ i.line_total | inr }}</td>
+          <td class="num"><form method="post" action="{{ url_for('cart.remove') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="product_id" value="{{ i.product_id }}"><button class="btn btn-ghost btn-sm" type="submit" data-remove aria-label="Remove">✕</button></form></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    <aside class="card"><div class="card-body">
+      <h3>Order summary</h3>
+      <div class="summary-line"><span>Subtotal</span><strong data-subtotal>{{ cart.subtotal | inr }}</strong></div>
+      <div class="summary-line"><span>Delivery</span><span data-shipping>{{ 'Free' if cart.shipping == 0 else cart.shipping | inr }}</span></div>
+      <div class="summary-line summary-total"><span>Total</span><span data-total>{{ cart.total | inr }}</span></div>
+      <p class="tiny muted">Prices are recalculated from the database at checkout. Free delivery over ₹999.</p>
+      <a class="btn btn-primary btn-lg btn-block" href="{{ url_for('cart.checkout') }}">Proceed to checkout</a>
+      <a class="btn btn-ghost btn-block" href="{{ url_for('shop.shop') }}" style="margin-top:.5rem">Continue shopping</a>
+    </div></aside>
+  </div>
+  {% else %}
+  <div class="empty card"><div class="icon">🛒</div><h3>Your cart is empty</h3><p>Find something good for you and the planet.</p><a class="btn btn-primary" href="{{ url_for('shop.shop') }}">Browse the shop</a></div>
+  {% endif %}
+</div>
+{% endblock %}

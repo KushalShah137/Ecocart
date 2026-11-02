@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="DJ illustration">
+<rect width="400" height="300" rx="20" fill="#f3efe6"/>
+<circle cx="200" cy="130" r="86" fill="#ffffff" opacity="0.7"/>
+<g transform="translate(150 80) scale(1)"><path d="M30 14 L48 8 Q50 18 52 8 L70 14 L88 30 L74 42 L74 92 H26 V42 L12 30 Z" fill="none" stroke="#8a5a2b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="200" y="262" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#8a5a2b" letter-spacing="2">DJ</text>
+</svg>

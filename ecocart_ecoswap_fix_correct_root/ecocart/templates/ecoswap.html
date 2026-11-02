@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Eco Swap{% endblock %}
+{% block content %}
+<section class="hero" style="padding:3rem 0">
+  <div class="container">
+    <div class="eyebrow">Eco Swap</div>
+    <h1>A like-for-like alternative. A better score. A similar price.</h1>
+    <p>EcoCart first checks that two products serve the same purpose, then compares estimated sustainability scores and prices. If no suitable match exists, it shows no recommendation.</p>
+  </div>
+</section>
+<div class="container section">
+  <div class="grid grid-4">
+    {% for n, t, d in [('1', 'Same product function', 'Tape matches tape and notebooks match notebooks. Different items in the same broad category are not interchangeable.'),
+                       ('2', 'Higher Eco-Score', 'The alternative must have a sustainability record with a strictly higher score.'),
+                       ('3', 'Similar price', 'Within ±20% of the original by default; adjustable on each product page.'),
+                       ('4', 'In stock', 'Only active products with stock available are recommended.')] %}
+    <div class="card"><div class="card-body"><div class="score-big" style="font-size:2rem;color:var(--green-600)">{{ n }}</div><h3>{{ t }}</h3><p class="muted small" style="margin:0">{{ d }}</p></div></div>
+    {% endfor %}
+  </div>
+  <p class="muted small" style="margin-top:1rem">Unknown or ambiguous product types are excluded instead of being matched speculatively. Results are ordered by Eco-Score, then by closeness in price. Implemented in Oracle as <code>ECOCART_PKG.ECO_SWAP</code> — a rule-based recommender, not an AI model.</p>
+
+  <div class="section-head" style="margin-top:2rem"><div><div class="eyebrow">Live from the catalogue</div><h2>Biggest improvements available right now</h2></div></div>
+  {% if swaps %}
+  <div class="grid grid-3">
+    {% for s in swaps %}
+    <div class="card swap-card"><div class="card-body">
+      <div class="cat" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:600;margin-bottom:.5rem">{{ s.category_name }}</div>
+      <div class="swap-pair">
+        <div class="swap-item"><img src="{{ s.orig_image }}" alt=""><div><div class="n"><a href="{{ url_for('shop.product', product_id=s.orig_id) }}">{{ s.orig_name }}</a></div><div class="p">{{ s.orig_price | inr }} · Eco {{ s.orig_score }}</div></div></div>
+        <div class="swap-arrow">→</div>
+        <div class="swap-item"><img src="{{ s.alt_image }}" alt=""><div><div class="n"><a href="{{ url_for('shop.product', product_id=s.alt_id) }}">{{ s.alt_name }}</a></div><div class="p">{{ s.alt_price | inr }} · Eco {{ s.alt_score }}</div></div></div>
+      </div>
+      <div style="margin-top:.75rem;display:flex;justify-content:space-between;align-items:center"><span class="gain">+{{ s.score_gain | int }} Eco points</span><span class="small muted">{% if s.price_diff > 0 %}+{{ s.price_diff | inr }}{% elif s.price_diff < 0 %}−{{ (-s.price_diff) | inr }} cheaper{% else %}same price{% endif %}</span></div>
+    </div></div>
+    {% endfor %}
+  </div>
+  {% else %}<div class="empty card">No qualifying pairs in the catalogue yet.</div>{% endif %}
+</div>
+{% endblock %}
