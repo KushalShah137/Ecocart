@@ -1,4 +1,0 @@
-{% extends 'base.html' %}{% block title %}Error{% endblock %}
-{% block content %}<div class="container section"><div class="empty card"><div class="icon">🛠️</div><h1 style="font-size:1.5rem">Something went wrong</h1>
-{% if db_down %}<p>EcoCart could not reach the Oracle database. Check that the Oracle service named by <code>ECOCART_DB_DSN</code> in <code>.env</code> is running (typically <code>XEPDB1</code> for XE 21c or <code>FREEPDB1</code> for Oracle Free), then reload.</p>{% else %}<p>An unexpected error occurred. Nothing was saved. Please try again.</p>{% endif %}
-<a class="btn btn-primary" href="{{ url_for('main.home') }}">Back to home</a></div></div>{% endblock %}
