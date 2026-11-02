@@ -7,3 +7,7 @@ __pycache__/
 .vscode/
 .idea/
 wallet/
+ecocart_ecoswap_fix_correct_root/
+ecocart_ecoswap_actual_sql_fix/
+*.zip
+*.pptx
